@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Math Harness · 数学研究工作台</title><link rel="stylesheet" href="/styles.css"></head>
+<body>
+<aside class="sidebar">
+  <div class="brand"><span class="brandmark">∴</span><div>Math Harness<small>数学研究工作台</small></div></div>
+  <button id="new-run" class="new-button"><span>＋</span> 新建研究任务</button>
+  <div class="side-label">研究记录 <span id="run-count">0</span></div>
+  <div id="run-list" class="run-list"><p class="empty-side">你的研究，从一个问题开始。</p></div>
+  <div class="sidebar-bottom"><button id="open-settings" class="settings-button">⚙ <span>模型与账号</span><span>↗</span></button>
+  <div class="version">LOCAL WORKSPACE <span>v0.1.0</span></div></div>
+</aside>
+<main>
+ <header class="topbar"><div><span class="breadcrumb">工作空间</span><span class="slash">/</span><span id="page-name">新建任务</span></div><span class="local-tag"><i></i> 本机保存</span></header>
+ <section id="composer" class="page">
+  <div class="hero"><span class="eyebrow">A WORKSPACE FOR MATHEMATICAL THINKING</span><h1>把一个问题，推进一步。</h1><p>组织思路，检验证明，让每一步研究都有记录。</p></div>
+  <div class="connection-banner"><span class="connection-icon">⇄</span><div><strong>使用你的模型，按你的节奏研究</strong><p>支持 GPT 账号登录和自定义 API；也可以先运行离线演示。</p></div><button id="configure-models" class="link-button">配置连接 ↗</button></div>
+  <form id="run-form">
+   <div class="mode-tabs" role="tablist"><button type="button" data-mode="prove_review" class="selected">证明与审查<span>生成 · 检查 · 审计</span></button><button type="button" data-mode="generate">生成证明<span>先探索一个思路</span></button><button type="button" data-mode="review">审查已有证明<span>定位问题与缺口</span></button></div>
+   <div class="card editor-card"><div class="card-heading"><h2>研究问题</h2><button id="load-example" type="button" class="link-button">填入示例</button></div>
+    <label for="title">任务名称</label><input id="title" maxlength="100" placeholder="例如：一个紧性引理的证明" required>
+    <div class="label-row"><label for="question">问题与假设</label><button type="button" id="import-question" class="small-button">导入文本</button></div>
+    <textarea id="question" class="question-input" placeholder="写下要证明的命题、精确假设，以及希望重点检查的步骤。支持 LaTeX 源码。" required maxlength="80000"></textarea>
+    <div id="candidate-group" hidden><label for="candidate">已有候选证明</label><textarea id="candidate" placeholder="粘贴待检查的完整证明……" maxlength="160000"></textarea></div>
+    <details><summary>参考材料与补充说明 <span>可选</span></summary><div class="label-row"><label for="references">模型将读取这些文本</label><button type="button" id="import-reference" class="small-button">导入 .tex / .md / .txt</button></div><textarea id="references" placeholder="粘贴所需定义、已有引理、参考文献摘录或你的研究笔记。" maxlength="120000"></textarea></details>
+   </div>
+   <div class="card execution-card"><div class="card-heading"><h2>模型与执行</h2><span class="subtle">每个角色使用独立上下文</span></div>
+    <div class="three-columns"><div><label for="generator">证明生成</label><select id="generator"></select></div><div><label for="reviewer">错误检查</label><select id="reviewer"></select></div><div><label for="auditor">反馈审计</label><select id="auditor"></select></div></div>
+    <div class="limits"><div><label for="max-rounds">最多轮数</label><input id="max-rounds" type="number" min="1" max="20" value="2"></div><div><label for="max-calls">最多调用次数</label><input id="max-calls" type="number" min="1" max="100" value="9"></div><p>调用上限包含失败请求。实际费用由所选服务计费；模型审查结果仍需人工确认。</p></div>
+   </div>
+   <div class="start-row"><span id="demo-note">◌ 当前包含离线演示模型，不会作为真实证明结果。</span><button id="start-button" class="primary" type="submit">开始研究 <span>→</span></button></div>
+  </form>
+ </section>
+ <section id="result" class="page" hidden>
+  <div class="result-heading"><div><span class="eyebrow">RESEARCH RECORD</span><h1 id="result-title"></h1></div><button id="export-run" class="secondary">导出 Markdown ↗</button></div>
+  <div class="status-card"><span id="status-icon" class="status-icon">◌</span><div><strong id="result-status"></strong><p id="result-message"></p></div><div class="status-actions"><button id="pause-run" class="secondary" hidden>当前阶段后暂停</button><button id="resume-run" class="primary" hidden>继续运行 →</button></div></div>
+  <div class="metrics"><div><span>当前轮次</span><strong id="metric-round">—</strong></div><div><span>调用次数</span><strong id="metric-calls">—</strong></div><div><span>已保存阶段</span><strong id="metric-steps">—</strong></div><div><span>报告的 token 用量</span><strong id="metric-tokens">—</strong></div></div>
+  <div id="result-demo" class="demo-warning" hidden>这是离线演示，使用固定示例，没有调用模型，也没有验证你的输入问题。</div>
+  <div class="result-tabs"><button data-result-tab="draft" class="active">候选证明</button><button data-result-tab="feedback">已审核反馈</button><button data-result-tab="history">完整过程</button><button data-result-tab="input">原始输入</button></div>
+  <div class="card output-card"><div class="output-toolbar"><span id="output-label">候选证明 · 文本与 LaTeX 源码</span><button id="copy-output" class="link-button">复制</button></div><pre id="output-text"></pre></div>
+ </section>
+</main>
+<dialog id="settings-dialog">
+ <div class="dialog-heading"><div><span class="eyebrow">CONNECTIONS</span><h2>模型与账号</h2></div><button id="close-settings" class="icon-button" aria-label="关闭">×</button></div>
+ <div class="settings-layout"><nav><button class="settings-tab active" data-settings="account">GPT 账号</button><button class="settings-tab" data-settings="api">自定义 API</button><button class="settings-tab" data-settings="about">运行与数据</button></nav><div class="settings-body">
+  <section id="settings-account"><span class="pill">官方 Codex CLI 授权</span><h3>用 GPT 账号开始研究</h3><p class="description">点击登录后，在官方浏览器页面完成授权。如果浏览器未弹出，可从新打开的 Codex 窗口复制授权地址。可用模型与额度由你的账号决定。</p><div id="codex-status" class="inline-status">点击“检查状态”检测本机 Codex。</div><div class="button-row"><button id="codex-login" class="primary">登录 GPT 账号 ↗</button><button id="codex-switch" class="secondary">切换账号</button><button id="codex-check" class="secondary">检查状态</button><button id="codex-test" class="secondary" disabled>测试账号连接</button></div><p id="codex-test-status" class="field-help" role="status">登录状态只检查授权；测试连接会发送一次简短模型请求。</p><form id="codex-form"><label for="codex-model">模型名称</label><input id="codex-model" placeholder="留空使用 Codex 默认模型"><p class="field-help">可填写账号有权限使用的准确模型名称。</p><button class="secondary" type="submit">保存账号模型设置</button></form><div class="note">若未安装 Codex CLI，可双击安装包中的 install-codex.bat。登录凭据由官方 CLI 管理。</div></section>
+  <section id="settings-api" hidden><div class="label-row"><h3>API 连接</h3><button id="new-profile" class="link-button">＋ 新建连接</button></div><label for="edit-profile">选择已保存连接</label><select id="edit-profile"></select><form id="profile-form"><input id="profile-id" type="hidden"><div class="two-columns"><div><label for="profile-name">连接名称</label><input id="profile-name" placeholder="例如：我的 DeepSeek" required></div><div><label for="preset">服务预设</label><select id="preset"><option value="custom">自定义兼容接口</option value="deepseek">DeepSeek 官方</option><option value="local">本地兼容服务</option></select></div></div><label for="base-url">服务地址（Base URL）</label><input id="base-url" type="url" placeholder="https://api.example.com/v1" required><div class="two-columns"><div><label for="api-model">模型名称</label><input id="api-model" placeholder="服务商提供的准确名称" required></div><div><label for="api-key">API Key</label><input id="api-key" type="password" autocomplete="new-password" placeholder="编辑时留空保留已有密钥"></div></div><label class="checkbox-label"><input id="persist-key" type="checkbox">使用 Windows 系统加密保存密钥</label><p id="key-help" class="field-help">未勾选时，密钥仅在本次运行中可用。</p><details><summary>高级参数</summary><div class="two-columns"><div><label for="timeout">超时（秒）</label><input id="timeout" type="number" value="600" min="10" max="3600"></div><div><label for="max-output">每次输出 token 上限</label><input id="max-output" type="number" value="4096" min="128" max="131072"></div></div><label for="token-param">输出限制参数</label><select id="token-param"><option value="max_tokens">max_tokens</option><option value="max_completion_tokens">max_completion_tokens</option></select><label for="extra-body">额外请求参数（JSON，无密钥）</label><textarea id="extra-body" class="small-textarea" placeholder='例如：{"temperature": 0.3}'>{}</textarea></details><div class="button-row"><button class="primary" type="submit">保存连接</button><button id="test-profile" class="secondary" type="button">测试连接</button></div><p class="field-help">测试连接会发送一次简短模型请求。第一版支持 Chat Completions 协议。</p></form></section>
+  <section id="settings-about" hidden><h3>让每一步都有记录</h3><p class="description">输入、证明版本、审查与执行状态都保存在本机。</p><label>数据目录</label><code id="data-dir"></code><div class="note">可以将程序解压到 F 盘。数据默认放在当前用户的 LocalAppData / MathHarness；也可通过 MATH_HARNESS_DATA_DIR 指定位置。</div><h4>第一版范围</h4><p class="description">支持文本材料、单任务执行、阶段保存和 Markdown 导出。公式以 LaTeX 源码显示；暂未加入 PDF 解析、联网文献检索和任意代码执行。模型通过审查表示可供人工复核，不构成证明证书。</p></section>
+ </div></div>
+</dialog>
+<input id="file-input" type="file" accept=".md,.tex,.txt" hidden><div id="toast" role="status" hidden></div>
+<script src="/app.js"></script>
+</body></html>

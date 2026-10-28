@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "math-harness-desktop"
+version = "0.1.0"
+description = "Windows-first mathematical research workbench with Codex login and configurable model APIs"
+requires-python = ">=3.11"
+dependencies = []
+license = {text = "MIT"}
+
+[project.optional-dependencies]
+desktop = ["pywebview>=5,<7"]
+build = ["pyinstaller>=6,<7"]
+
+[project.scripts]
+math-harness = "math_harness.__main__:main"
+
+[tool.setuptools.package-data]
+math_harness = ["static/*"]
+
